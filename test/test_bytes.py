@@ -14,28 +14,28 @@ def do_count(cmd_wc, cmd_ccwc):
 
 def count_bytes_on(filename):
     return do_count(
-        ['wc', '--bytes', filename],
+        ['wc', '-c', filename],
         ['../src/ccwc/ccwc', '-c', filename]
     )
 
 
 def count_lines_on(filename):
     return do_count(
-        ['wc', '--lines', filename],
+        ['wc', '-l', filename],
         ['../src/ccwc/ccwc', '-l', filename]
     )
 
 
 def count_words_on(filename):
     return do_count(
-        ['wc', '--words', filename],
+        ['wc', '-w', filename],
         ['../src/ccwc/ccwc', '-w', filename]
     )
 
 
 def count_chars_on(filename):
     return do_count(
-        ['wc', '--chars', filename],
+        ['wc', '-m', filename],
         ['../src/ccwc/ccwc', '-m', filename]
     )
 
@@ -77,7 +77,7 @@ def test_chars():
 
 
 def test_multibyte_chars():
-    expected, actual = count_chars_on('mulibyte.txt')
+    expected, actual = count_chars_on('multibyte.txt')
     assert expected == 5, 'wc should return 5 characters!'
     assert actual == expected, f'Should be {expected}, got {actual}'
 
