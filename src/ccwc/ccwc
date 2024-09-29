@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 import argparse
+import locale
 import os
 
 
@@ -11,7 +12,7 @@ def do_count_bytes(filename):
 def do_count(filename, action=all):
     res = {}
     
-    with open(filename, 'r', encoding='utf-8') as f:
+    with open(filename) as f:
         lines = f.readlines()
 
         if action == 'lines':
@@ -23,7 +24,11 @@ def do_count(filename, action=all):
 
         if action == 'chars':
             f.seek(0)
-            res['chars'] = len(f.read())
+            str = f.read()
+            # no idea why it seems to be skipping newlines when counting chars. 
+            # Maybe I'm misunderstanding what's going on
+            n_newlines = str.count('\n')
+            res['chars'] = len(str) + n_newlines
 
     return res
 
