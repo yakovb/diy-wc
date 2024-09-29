@@ -4,10 +4,26 @@ import argparse
 import os
 
 
+def do_count_bytes(filename):
+    return os.path.getsize(filename)
+
+
+def do_count(filename, action=all):
+    res = {}
+    with open(filename) as f:
+        if action == 'lines':
+            res['lines'] = len(f.readlines())
+
+    return res
+
+
 def output(input):
     out = []
-    if 'bs' in input:
-        out.append( str(input['bs']) )
+    if 'bytes' in input:
+        out.append( str(input['bytes']) )
+    
+    if 'lines' in input:
+        out.append( str(input['lines']) )
 
     out.append(input['file'])
     return ' '.join(out)
@@ -19,13 +35,18 @@ ap = argparse.ArgumentParser(
     description='DIY wc')
 ap.add_argument('filename')
 ap.add_argument('-c', '--bytes', action='store_true')
+ap.add_argument('-l', '--lines', action='store_true')
 
 args = ap.parse_args()
 
 # Figure out what to count
 out = {'file': args.filename}
+
+
 if args.bytes:
-    out['bs'] = os.path.getsize(args.filename)
+    out['bytes'] = do_count_bytes(args.filename)
+elif args.lines:
+    out['lines'] = do_count(args.filename, action='lines')['lines']
 
 # Format and print the output
 print(output(out))

@@ -6,6 +6,7 @@ def count_bytes_on(filename):
     expected = int(res.stdout.split()[0])
     
     ccwc = subprocess.run(['../src/ccwc/ccwc', '-c', filename], capture_output=True, text=True)
+    print(ccwc)
     actual = int(ccwc.stdout.split()[0])
 
     return (expected, actual)
