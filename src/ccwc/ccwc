@@ -10,20 +10,25 @@ def do_count_bytes(filename):
 
 def do_count(filename, action=all):
     res = {}
+    
     with open(filename) as f:
+        lines = f.readlines()
+
         if action == 'lines':
-            res['lines'] = len(f.readlines())
+            res['lines'] = len(lines)
+
+        if action == 'words':
+            words = [len(line.split()) for line in lines]
+            res['words'] = sum(words)
 
     return res
 
 
 def output(input):
     out = []
-    if 'bytes' in input:
-        out.append( str(input['bytes']) )
-    
-    if 'lines' in input:
-        out.append( str(input['lines']) )
+    for o in ['bytes', 'lines', 'words']:
+        if o in input:
+            out.append( str(input[o]) )
 
     out.append(input['file'])
     return ' '.join(out)
@@ -36,6 +41,8 @@ ap = argparse.ArgumentParser(
 ap.add_argument('filename')
 ap.add_argument('-c', '--bytes', action='store_true')
 ap.add_argument('-l', '--lines', action='store_true')
+ap.add_argument('-w', '--words', action='store_true')
+
 
 args = ap.parse_args()
 
@@ -47,6 +54,9 @@ if args.bytes:
     out['bytes'] = do_count_bytes(args.filename)
 elif args.lines:
     out['lines'] = do_count(args.filename, action='lines')['lines']
+elif args.words:
+    out['words'] = do_count(args.filename, action='words')['words']
+
 
 # Format and print the output
 print(output(out))
