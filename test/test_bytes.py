@@ -6,7 +6,6 @@ def count_bytes_on(filename):
     expected = int(res.stdout.split()[0])
     
     ccwc = subprocess.run(['../src/ccwc/ccwc', '-c', filename], capture_output=True, text=True)
-    print(ccwc)
     actual = int(ccwc.stdout.split()[0])
 
     return (expected, actual)
@@ -17,6 +16,16 @@ def count_lines_on(filename):
     expected = int(res.stdout.split()[0])
     
     ccwc = subprocess.run(['../src/ccwc/ccwc', '-l', filename], capture_output=True, text=True)
+    actual = int(ccwc.stdout.split()[0])
+
+    return (expected, actual)
+
+
+def count_words_on(filename):
+    res = subprocess.run(['wc', '--words', filename], capture_output=True, text=True)
+    expected = int(res.stdout.split()[0])
+    
+    ccwc = subprocess.run(['../src/ccwc/ccwc', '-w', filename], capture_output=True, text=True)
     actual = int(ccwc.stdout.split()[0])
 
     return (expected, actual)
@@ -37,6 +46,12 @@ def test_bytes():
 def test_lines():
     expected, actual = count_lines_on('test.txt')
     assert expected == 7145, 'wc should return 7145 lines!'
+    assert actual == expected, f'Should be {expected}, got {actual}'
+
+
+def test_words():
+    expected, actual = count_words_on('test.txt')
+    assert expected == 58164, 'wc should return 58164 words!'
     assert actual == expected, f'Should be {expected}, got {actual}'
 
 
