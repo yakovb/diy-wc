@@ -1,34 +1,43 @@
 import pytest
 import subprocess
 
-def count_bytes_on(filename):
-    res = subprocess.run(['wc', '--bytes', filename], capture_output=True, text=True)
+
+def do_count(cmd_wc, cmd_ccwc):
+    res = subprocess.run(cmd_wc, capture_output=True, text=True)
     expected = int(res.stdout.split()[0])
     
-    ccwc = subprocess.run(['../src/ccwc/ccwc', '-c', filename], capture_output=True, text=True)
+    ccwc = subprocess.run(cmd_ccwc, capture_output=True, text=True)
     actual = int(ccwc.stdout.split()[0])
 
     return (expected, actual)
+
+
+def count_bytes_on(filename):
+    return do_count(
+        ['wc', '--bytes', filename],
+        ['../src/ccwc/ccwc', '-c', filename]
+    )
 
 
 def count_lines_on(filename):
-    res = subprocess.run(['wc', '--lines', filename], capture_output=True, text=True)
-    expected = int(res.stdout.split()[0])
-    
-    ccwc = subprocess.run(['../src/ccwc/ccwc', '-l', filename], capture_output=True, text=True)
-    actual = int(ccwc.stdout.split()[0])
-
-    return (expected, actual)
+    return do_count(
+        ['wc', '--lines', filename],
+        ['../src/ccwc/ccwc', '-l', filename]
+    )
 
 
 def count_words_on(filename):
-    res = subprocess.run(['wc', '--words', filename], capture_output=True, text=True)
-    expected = int(res.stdout.split()[0])
-    
-    ccwc = subprocess.run(['../src/ccwc/ccwc', '-w', filename], capture_output=True, text=True)
-    actual = int(ccwc.stdout.split()[0])
+    return do_count(
+        ['wc', '--words', filename],
+        ['../src/ccwc/ccwc', '-w', filename]
+    )
 
-    return (expected, actual)
+
+def count_chars_on(filename):
+    return do_count(
+        ['wc', '--chars', filename],
+        ['../src/ccwc/ccwc', '-m', filename]
+    )
 
 
 def test_zero():
@@ -43,6 +52,12 @@ def test_bytes():
     assert actual == expected, f'Should be {expected}, got {actual}'
 
 
+def test_multibytes():
+    expected, actual = count_bytes_on('multibyte.txt')
+    assert expected == 7, 'wc should return 7 bytes!'
+    assert actual == expected, f'Should be {expected}, got {actual}'
+
+
 def test_lines():
     expected, actual = count_lines_on('test.txt')
     assert expected == 7145, 'wc should return 7145 lines!'
@@ -52,6 +67,18 @@ def test_lines():
 def test_words():
     expected, actual = count_words_on('test.txt')
     assert expected == 58164, 'wc should return 58164 words!'
+    assert actual == expected, f'Should be {expected}, got {actual}'
+
+
+def test_chars():
+    expected, actual = count_chars_on('test.txt')
+    assert expected == 339292, 'wc should return 339292 characters!'
+    assert actual == expected, f'Should be {expected}, got {actual}'
+
+
+def test_multibyte_chars():
+    expected, actual = count_chars_on('mulibyte.txt')
+    assert expected == 5, 'wc should return 5 characters!'
     assert actual == expected, f'Should be {expected}, got {actual}'
 
 
