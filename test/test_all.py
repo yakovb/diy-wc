@@ -50,10 +50,10 @@ def count_all_on(filename):
 
 def count_filename(filename):
     res = subprocess.run(['wc', filename], capture_output=True, text=True)
-    expected = int(res.stdout.split()[-1])
+    expected = res.stdout.split()[-1]
     
     ccwc = subprocess.run(['../src/ccwc/ccwc', filename], capture_output=True, text=True)
-    actual = int(ccwc.stdout.split()[-1])
+    actual = ccwc.stdout.split()[-1]
 
     return (expected, actual)
 
