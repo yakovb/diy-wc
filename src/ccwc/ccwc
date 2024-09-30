@@ -9,11 +9,19 @@ def do_count_bytes(filename):
     return os.path.getsize(filename)
 
 
-def do_count_lines(lines):
-    return len(lines)
+def do_count_lines(file):
+    file.seek(0)
+    str = file.read()
+    rn = str.count('\r\n')
+    if rn != 0:
+        return rn
+    else:
+        return str.count('\n')
 
 
-def do_count_words(lines):
+def do_count_words(file):
+    file.seek(0)
+    lines = file.readlines()
     words = [len(line.split()) for line in lines]
     return sum(words)
 
@@ -27,24 +35,22 @@ def do_count(filename, action='all'):
     res = {}
     
     with open(filename, newline='') as f:
-        lines = f.readlines()
-
         if action == 'bytes':
             res['bytes'] = do_count_bytes(filename)
 
         if action == 'lines':
-            res['lines'] = do_count_lines(lines)
+            res['lines'] = do_count_lines(f)
 
         if action == 'words':
-            res['words'] = do_count_words(lines)
+            res['words'] = do_count_words(f)
 
         if action == 'chars':
             res['chars'] = do_count_chars(f)
 
         if action == 'all':
             res['bytes'] = do_count_bytes(filename)
-            res['lines'] = do_count_lines(lines)
-            res['words'] = do_count_words(lines)
+            res['lines'] = do_count_lines(f)
+            res['words'] = do_count_words(f)
 
     return res
 
