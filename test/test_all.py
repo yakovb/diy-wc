@@ -39,6 +39,21 @@ def count_chars_on(filename):
         ['../src/ccwc/ccwc', '-m', filename]
     )
 
+def count_all_on(filename):
+    return do_count(
+        ['wc', filename],
+        ['../src/ccwc/ccwc', filename]
+    )
+
+def count_filename(filename):
+    res = subprocess.run(['wc', filename], capture_output=True, text=True)
+    expected = int(res.stdout.split()[-1])
+    
+    ccwc = subprocess.run(['../src/ccwc/ccwc', filename], capture_output=True, text=True)
+    actual = int(ccwc.stdout.split()[-1])
+
+    return (expected, actual)
+
 
 def test_zero():
     expected, actual = count_bytes_on('zero.txt')
@@ -79,6 +94,22 @@ def test_chars():
 def test_multibyte_chars():
     expected, actual = count_chars_on('multibyte.txt')
     assert expected == 5, 'wc should return 5 characters!'
+    assert actual == expected, f'Should be {expected}, got {actual}'
+
+def test_all():
+    expected, actual = count_all_on('test.txt')
+    assert expected == [7145, 58164, 342190], 'wc should return 7145, 58164, 342190!'
+    assert actual == expected, f'Should be {expected}, got {actual}'
+
+def test_all_multibyte():
+    expected, actual = count_all_on('multibyte.txt')
+    assert expected == [1, 5, 7], 'wc should return 1, 5, 7!'
+    assert actual == expected, f'Should be {expected}, got {actual}'
+
+def test_filename():
+    f = 'test.txt'
+    expected, actual = count_filename(f)
+    assert expected == f, 'wc should return test.txt!'
     assert actual == expected, f'Should be {expected}, got {actual}'
 
 
