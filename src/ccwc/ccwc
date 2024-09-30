@@ -9,34 +9,54 @@ def do_count_bytes(filename):
     return os.path.getsize(filename)
 
 
-def do_count(filename, action=all):
+def do_count_lines(lines):
+    return len(lines)
+
+
+def do_count_words(lines):
+    words = [len(line.split()) for line in lines]
+    return sum(words)
+
+
+def do_count_chars(file):
+    file.seek(0)
+    return len(file.read())
+
+
+def do_count(filename, action='all'):
     res = {}
     
     with open(filename, newline='') as f:
         lines = f.readlines()
 
+        if action == 'bytes':
+            res['bytes'] = do_count_bytes(filename)
+
         if action == 'lines':
-            res['lines'] = len(lines)
+            res['lines'] = do_count_lines(lines)
 
         if action == 'words':
-            words = [len(line.split()) for line in lines]
-            res['words'] = sum(words)
+            res['words'] = do_count_words(lines)
 
         if action == 'chars':
-            f.seek(0)
-            res['chars'] = len(f.read())
+            res['chars'] = do_count_chars(f)
+
+        if action == 'all':
+            res['bytes'] = do_count_bytes(filename)
+            res['lines'] = do_count_lines(lines)
+            res['words'] = do_count_words(lines)
 
     return res
 
 
 def output(input):
     out = []
-    for o in ['bytes', 'lines', 'words', 'chars']:
+    for o in ['chars', 'lines', 'words', 'bytes']:
         if o in input:
             out.append( str(input[o]) )
 
     out.append(input['file'])
-    return ' '.join(out)
+    return '\t'.join(out)
 
 
 # Collect arguments
@@ -57,13 +77,15 @@ out = {'file': args.filename}
 
 
 if args.bytes:
-    out['bytes'] = do_count_bytes(args.filename)
+    out['bytes'] = do_count(args.filename, action='bytes')['bytes']
 elif args.lines:
     out['lines'] = do_count(args.filename, action='lines')['lines']
 elif args.words:
     out['words'] = do_count(args.filename, action='words')['words']
 elif args.chars:
     out['chars'] = do_count(args.filename, action='chars')['chars']
+else:
+    out.update(do_count(args.filename))
 
 # Format and print the output
 print(output(out))
